@@ -1,4 +1,5 @@
 window.TicTacToe = {
+    /* Global var definitions, setting game initial values*/
     app: document.getElementById('app'),
     rowSize: 3,
     grid: [1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -6,10 +7,10 @@ window.TicTacToe = {
     currentTurn: 1,
     winningCombinations: [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]],
     players: [[], []],
-    gameFinished: false,
     init: () => {
         TicTacToe.loadStartScreen();
     },
+    /* Function to load the start screen using ES6 syntax, appending the onClick event to Start Game button to call the loadGame*/
     loadStartScreen: () => {
         this.app.innerHTML = `
             <div class="screen screen-start" id="start">
@@ -19,10 +20,11 @@ window.TicTacToe = {
               </header>
             </div>`;
     },
-    loadGame: (playerToStart) => {
-        console.log(TicTacToe);
+/* Function to load initial state of the board game and show the play board*/
 
-        // mapping the html content and the li elements
+    loadGame: (playerToStart) => {
+
+        /* mapping the html content and the li box elements also setting the onClick, onMousever and onMouseOut events to toggle the player mark background image, and play the game upon click an empty field */
         this.app.innerHTML = `
            <div class="board" id="board">
               <header>
@@ -37,17 +39,20 @@ window.TicTacToe = {
               </ul>
             </div>
             `;
-        // set Active Player
+    /* Setting the active player based on the intial values */
         document.getElementById('player' + playerToStart).classList.add('active');
     },
+    /* Function which is called upon an empty field click by any of the players */
 
     playGame: (li) => {
+        /* check if field is empty or not */
         if (!li.classList.contains('box-filled-1') && !li.classList.contains('box-filled-2')) {
+            /* adding proper class */
             li.classList.add('box-filled-' + TicTacToe.playerOnTurn);
+            /* setting player clicked values */
             TicTacToe.setPlayerClickedValues(li);
             TicTacToe.incrementTurn();
-            // if it's not the last round switch player
-             TicTacToe.switchPlayer();
+            TicTacToe.switchPlayer();
         }
     },
     switchPlayer: () => {
@@ -59,26 +64,28 @@ window.TicTacToe = {
         }
     },
     incrementTurn: () => {
+        // take the current turn value and increment it, if the value is over 5 check for game over condition
         if (TicTacToe.currentTurn >= 5) TicTacToe.checkForGameOver();
         TicTacToe.currentTurn++;
+        // if turn equals 10 it's a tie, meaing none of the players satisfied the win condition
         if (TicTacToe.currentTurn == 10) TicTacToe.loadEndScreen('tie');
             },
     setPlayerClickedValues: (key) => {
+        // creating an array for each player and pushing the clicked value of the field
         TicTacToe.players[TicTacToe.playerOnTurn - 1].push(key.dataset.key);
     },
     checkForGameOver: () => {
         // setting the selected and winning combination variables
-
-
         let winningCombinations = TicTacToe.winningCombinations;
         let selected = TicTacToe.players[TicTacToe.playerOnTurn - 1];
 
-
+        // looping through the winning combination arrays and comparing the values to the active player selected arrays values, if there is a match incrementing the match, if the match reaches 3 it means that the player on turn won since his checked values match one of the winning combinations arrays.
         for (let winArr of winningCombinations) {
             let matches = 0;
             for (let winVal of winArr) {
                 if (selected.includes(winVal.toString())) matches++;
             }
+            // calling the function to show the end screen
             if (matches == 3) { let result = (TicTacToe.playerOnTurn == 1) ? 'one':'two'; TicTacToe.loadEndScreen(result); }
 
         }
@@ -86,8 +93,9 @@ window.TicTacToe = {
 
     },
     loadEndScreen: (result) => {
-        TicTacToe.gameFinished = true;
+        // setting the win message or tie message
         let msg = (result == "tie") ? "It's a draw" : "Winner";
+        // appending the end screen html and appinding an onclick function to call the restart game function
         this.app.innerHTML = `
             <div class="screen screen-win screen-win-${result}" id="finish">
                 <header>
@@ -105,6 +113,7 @@ window.TicTacToe = {
             li.classList.toggle('player-' + TicTacToe.playerOnTurn + '-hover');
         }
     },
+    // function which resets all the global defined vars and call loadGame to start a new game
     restartGame: () => {
             TicTacToe.playerOnTurn = 1;
             TicTacToe.currentTurn = 1;
